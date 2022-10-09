@@ -7,9 +7,9 @@ import Grid from "@mui/material/Grid";
 import { InlineMath, BlockMath } from "react-katex";
 import Typography from "@mui/material/Typography";
 
-function Beta() {
-  const [alfa, setAlfa] = useState(2);
-  const [beta, setBeta] = useState(2);
+function Erlang() {
+  const [lambda, setLambda] = useState(1);
+  const [n, setN] = useState(1);
   const [x1, setX1] = useState(0);
   const [x2, setX2] = useState(1);
   const [range, setRange] = useState([0, 1]);
@@ -35,18 +35,18 @@ function Beta() {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <NumberInput
-              text={"α"}
-              value={alfa}
-              handleChange={(e) => setAlfa(e)}
+              text={"n"}
+              value={n}
+              handleChange={(e) => setN(e)}
               min={0}
               max={100}
             />
             <NumberInput
-              text={"β"}
-              value={beta}
-              min={0}
+              text={"λ"}
+              value={lambda}
+              min={1}
               max={100}
-              handleChange={(e) => setBeta(e)}
+              handleChange={(e) => setLambda(e)}
             />
           </Grid>
           <Grid item xs={12}>
@@ -55,12 +55,12 @@ function Beta() {
               value={x1}
               handleChange={(e) => setX1(e)}
               min={0}
-              max={1}
+              max={20}
             />
             <NumberInput
               text={"y"}
               min={0}
-              max={1}
+              max={20}
               value={x2}
               handleChange={(e) => setX2(e)}
             />
@@ -68,7 +68,7 @@ function Beta() {
         </Grid>
       </Grid>
       <Grid item xs={3}>
-        <BlockMath math={`X\\leadsto B(\\alpha,\\beta)`} />
+        <BlockMath math={`X\\leadsto E(n,\\lambda)`} />
         <BlockMath math={` P(${x1}<X<${x2})=${integral.toString()}`} />
       </Grid>
       <Grid item xs={3}>
@@ -77,10 +77,10 @@ function Beta() {
         </Typography>
         <RangeSlider
           value={range}
-          step={0.05}
+          step={0.5}
           handleChange={handleChange}
           min={0}
-          max={1}
+          max={20}
           disabled={false}
           width="200px"
           labelDisplay="auto"
@@ -94,32 +94,50 @@ function Beta() {
           limitInf={x1}
           limitSup={x2}
           funcion={(x) =>
-            (Math.pow(x, alfa - 1) * Math.pow(1 - x, beta - 1)) /
-            ((gamma(alfa) * gamma(beta)) / gamma(alfa + beta))
+            (lambda * Math.E ** (-lambda * x) * (lambda * x) ** (n - 1)) /
+            factorial(n - 1)
           }
-          media={alfa / (alfa + beta)}
-          varianza={(alfa * beta) / ((alfa + beta + 1) * (alfa + beta) ** 2)}
-          step={0.1}
-          stringMedia={"E[X]=\\frac{\\alpha}{\\alpha+\\beta}"}
-          stringVarianza={
-            "Var[X]=\\frac{\\alpha\\beta}{(\\alpha+\\beta+1)(\\alpha+\\beta)^2}"
-          }
-          stringDesviacion={
-            "\\sigma(X)=\\sqrt{\\frac{\\alpha\\beta}{(\\alpha+\\beta+1)(\\alpha+\\beta)^2}}"
-          }
+          media={n / lambda}
+          varianza={n / lambda ** 2}
+          stringMedia={"E[X]=\\frac{n}{\\lambda}"}
+          stringVarianza={"Var[X]=\\frac{n}{\\lambda^2}"}
+          stringDesviacion={"\\sigma(X)=\\frac{n}{\\lambda}"}
           stringFuncionDensidad={
-            "f(x)=\\frac{x^{\\alpha-1}(1-x)^{\\beta-1}}{\\frac{\\Gamma(\\alpha)\\Gamma(\\beta)}{\\Gamma(\\alpha+\\beta)}}"
+            "f(x)=\\lambda e^{-\\lambda x} \\frac{(\\lambda x)^{n-1}}{(n-1)!}"
           }
           stringFuncionMasa={
-            "F(x)=1-\\sum_{n=0}^{k-1}\\frac{e^{-\\lambda x}(\\lambda x)^n}{n!}"
+            "F(x)=1-\\sum_{n=0}^{n-1}\\frac{e^{-\\lambda x}(\\lambda x)^n}{n!}"
           }
-          stringFuncionMomentos={
-            "M(t)=1+\\sum_{n=1}^{\\infty}\\left( \\prod_{r=0}^{n-1}{\\frac{\\alpha+r}{\\alpha+\\beta+r}} \\right) \\frac{t^n}{n!}"
-          }
+          stringFuncionMomentos={"M(t)="}
+          step={0.1}
         />
       </Grid>
     </Grid>
   );
 }
 
-export default Beta;
+export default Erlang;
+
+/*
+onCalculateIntegral={(e) => setIntegral(e)}
+          min={range[0]}
+          max={range[1]}
+          limitInf={x1}
+          limitSup={x2}
+          funcion={(x) =>
+            (lambda * Math.E ** (-lambda * x) * (lambda * x) ** (n - 1)) /
+            factorial(n - 1)
+          }
+          media={n / lambda}
+          varianza={n / lambda ** 2}
+          stringMedia={"E[X]=\\frac{n}{\\lambda}"}
+          stringVarianza={"Var[X]=\\frac{n}{\\lambda^2}"}
+          stringDesviacion={"\\sigma(X)=\\frac{n}{\\lambda}"}
+          stringFuncionDensidad={
+            "f(x)=\\lambda e^{-\\lambda x} \\frac{(\\lambda x)^{n-1}}{(n-1)!}"
+          }
+          stringFuncionMasa={
+            "F(x)=1-\\sum_{n=0}^{n-1}\\frac{e^{-\\lambda x}(\\lambda x)^n}{n!}"
+          }
+          stringFuncionMomentos={"M(t)="}
+          */
